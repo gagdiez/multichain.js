@@ -1,0 +1,81 @@
+{
+  "name": "multichain.js",
+  "version": "1.0.0",
+  "description": "Control accounts across multiple chains with NEAR Protocol",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/node/index.d.ts",
+      "import": "./dist/node/index.node.js",
+      "require": "./dist/node/index.node.cjs",
+      "default": "./dist/node/index.node.js"
+    }
+  },
+  "main": "./dist/node/index.node.cjs",
+  "module": "./dist/node/index.node.js",
+  "types": "./dist/node/index.d.ts",
+  "scripts": {
+    "build": "npm run clean && tsup --env.TARGET=node && tsup --env.TARGET=browser && npm run build:post",
+    "build:post": "jq 'del(.scripts, .devDependencies) | .files = [\"browser\", \"node\", \"package.json\", \"README.md\", \"LICENSE\"] | .exports = {\".\":{\"types\":\"./node/index.d.ts\",\"browser\":{\"import\":\"./browser/index.browser.js\",\"require\":\"./browser/index.browser.cjs\"},\"node\":{\"import\":\"./node/index.node.js\",\"require\":\"./node/index.node.cjs\"},\"import\":\"./node/index.node.js\",\"require\":\"./node/index.node.cjs\",\"default\":\"./browser/index.browser.js\"}} | .main = \"./node/index.node.cjs\" | .module = \"./node/index.node.js\" | .browser = \"./browser/index.browser.js\" | .types = \"./node/index.d.ts\"' package.json > dist/package.json && cp README.md dist/ && cp LICENSE dist/",
+    "clean": "rm -rf ./dist",
+    "test": "echo No testes yet",
+    "lint": "eslint ./src --ext .ts",
+    "lint:fix": "eslint ./src --ext .ts --fix",
+    "prettier": "prettier --check \"src/**/*.ts\"",
+    "prettier:fix": "prettier --write \"src/**/*.ts\"",
+    "docs:generate": "typedoc --options ./typedoc.json",
+    "pre:deploy": "npm run build",
+    "publish-npm": "npm run pre:deploy && cd dist && npm publish --access public",
+    "publish-npm:beta": "npm run pre:deploy && cd dist && npm publish --tag beta"
+  },
+  "keywords": [
+    "blockchain",
+    "cryptocurrency",
+    "mpc",
+    "multi-chain",
+    "ethereum",
+    "bitcoin",
+    "cosmos",
+    "near"
+  ],
+  "devDependencies": {
+    "@near-js/accounts": "^2.3.1",
+    "@near-js/providers": "^2.3.1",
+    "@near-js/signers": "^2.3.1",
+    "@near-js/transactions": "^2.3.1",
+    "@near-js/types": "^2.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
+    "@typescript-eslint/parser": "^8.44.0",
+    "eslint": "^9.35.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-n": "^17.23.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-promise": "^7.2.1",
+    "prettier": "^3.2.5",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.4.0",
+    "typedoc": "^0.28.7",
+    "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "@near-js/tokens": "^2.3.1",
+    "chainsig.js": "^1.1.11",
+    "multichain.js": "link:../../Library/pnpm/global/5/node_modules/multichain.js",
+    "viem": "^2.37.6"
+  },
+  "pnpm": {
+    "overrides": {
+      "multichain.js": "link:../../Library/pnpm/global/5/node_modules/multichain.js"
+    }
+  }
+}
