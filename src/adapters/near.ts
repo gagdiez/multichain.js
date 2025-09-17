@@ -12,12 +12,7 @@ export class NEARAdapter implements ChainAdapter<string> {
   }
 
   // Accept an object to match the ChainAdapter signature
-  async getControlledAccount({
-    nearAccountId,
-  }: {
-    nearAccountId: string
-    path?: string
-  }) {
+  async getControlledAccount({ nearAccountId }: { nearAccountId: string }) {
     // path is unused for NEAR for now
     return {
       address: nearAccountId,
@@ -50,25 +45,16 @@ export class NEARAdapter implements ChainAdapter<string> {
   }
 
   async transfer({
-    from,
     to,
     amount,
     nearAccount,
     tokenAddress,
   }: {
-    from: string
     to: string
     amount: string
     nearAccount: Account
     tokenAddress?: string
-    path?: string
   }): Promise<string> {
-    if (from !== nearAccount.accountId) {
-      throw new Error(
-        `The 'from' address (${from}) does not match the NEAR account (${nearAccount.accountId})`
-      )
-    }
-
     let token = NEAR
     if (tokenAddress)
       token = new FungibleToken(tokenAddress, {

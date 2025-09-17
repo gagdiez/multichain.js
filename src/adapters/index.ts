@@ -10,10 +10,10 @@ export interface ChainAdapter<AddressType = string> {
   publicClient: any
   getControlledAccount: ({
     nearAccountId,
-    path,
+    addressIndex,
   }: {
     nearAccountId: string
-    path?: string
+    addressIndex?: number
   }) => Promise<{
     address: AddressType
     publicKey: string | null
@@ -26,18 +26,16 @@ export interface ChainAdapter<AddressType = string> {
     tokenAddress?: AddressType
   }) => Promise<{ balance: string }>
   transfer: ({
-    from,
     to,
     amount,
     nearAccount,
     tokenAddress,
-    path,
+    addressIndex,
   }: {
-    from: AddressType
     to: AddressType
     amount: string
     nearAccount: Account
     tokenAddress?: AddressType
-    path?: string
+    addressIndex?: number
   }) => Promise<string>
 }

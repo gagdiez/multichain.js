@@ -2,7 +2,6 @@ import type { Account } from '@near-js/accounts'
 import { chainAdapters } from 'chainsig.js'
 import { encodeFunctionData, getAddress, type PublicClient } from 'viem'
 
-import { PATH } from '..'
 import type { MPC } from '../mpc'
 
 import type { ChainAdapter } from '.'
@@ -42,8 +41,6 @@ export class EVMAdapter implements ChainAdapter<EVMAddress> {
       contract: mpc as any,
     })
 
-    console.log('EVM', publicClient)
-
     this.publicClient = publicClient
     this.chainAdapter = adapter
     this.mpc = mpc
@@ -51,13 +48,16 @@ export class EVMAdapter implements ChainAdapter<EVMAddress> {
 
   async getControlledAccount({
     nearAccountId,
-    path = PATH,
+    addressIndex = 0,
   }: {
     nearAccountId: string
-    path?: string
+    addressIndex?: number
   }) {
     const { address, publicKey } =
-      await this.chainAdapter.deriveAddressAndPublicKey(nearAccountId, path)
+      await this.chainAdapter.deriveAddressAndPublicKey(
+        nearAccountId,
+        addressIndex.toString()
+      )
     return { address: address as EVMAddress, publicKey }
   }
 
@@ -68,8 +68,6 @@ export class EVMAdapter implements ChainAdapter<EVMAddress> {
     address: EVMAddress
     tokenAddress?: EVMAddress
   }) {
-    console.log('getBalance', { address, tokenAddress })
-    console.log('publicClient', this.publicClient)
     let balance = 0n
     if (!tokenAddress) {
       balance = await this.publicClient.getBalance({
@@ -89,37 +87,28 @@ export class EVMAdapter implements ChainAdapter<EVMAddress> {
   }
 
   async transfer({
-    from,
     to,
     amount,
     nearAccount,
     tokenAddress,
-    path = PATH,
+    addressIndex = 0,
   }: {
-    from: EVMAddress
     to: EVMAddress
     amount: string
     nearAccount: Account
     tokenAddress?: EVMAddress
-    path?: string
+    addressIndex?: number
   }) {
     let txParams: any
 
     const controlledAccount = await this.getControlledAccount({
       nearAccountId: nearAccount.accountId,
-      path,
+      addressIndex,
     })
-    if (controlledAccount.address.toLowerCase() !== from.toLowerCase()) {
-      throw new Error(
-        `The 'from' address (${from}) does not match the derived address (${controlledAccount.address}) for NEAR account ${nearAccount.accountId}`
-      )
-    }
 
     to = getAddress(to)
-    from = getAddress(from)
+    let from = getAddress(controlledAccount.address)
     if (tokenAddress) tokenAddress = getAddress(tokenAddress)
-
-    console.log('transfer', { from, to, amount, tokenAddress })
 
     if (tokenAddress) {
       // ERC-20 transfer: call transfer(recipient, amount) on token contract
@@ -149,7 +138,7 @@ export class EVMAdapter implements ChainAdapter<EVMAddress> {
 
     const rsvSignatures = await this.mpc.sign({
       payloads: hashesToSign,
-      path,
+      path: addressIndex.toString(),
       keyType: 'Ecdsa',
       signerAccount: nearAccount,
     })

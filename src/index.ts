@@ -7,8 +7,6 @@ export { chains } from './chains'
 import { MPC } from './mpc'
 import { AdapterForChain, ClientForChain, MPCNetworkId } from './types'
 
-export const PATH = 'predefined-path'
-
 export function getAdapter<C extends supportedChains>({
   chain,
   publicClient,
@@ -22,11 +20,19 @@ export function getAdapter<C extends supportedChains>({
     publicClient = clients[chain] as ClientForChain<C>
   }
 
-  const mpc = new MPC({
-    contractId:
-      mpcNetwork === 'mainnet' ? 'v1.signer' : 'v1.signer-prod.testnet',
-    provider: clients[chains.NEAR] as Provider,
-  })
+  let mpc: MPC
+
+  if (mpcNetwork === 'testnet') {
+    mpc = new MPC({
+      contractId: 'v1.signer-prod.testnet',
+      provider: clients[chains.NEAR_TESTNET] as Provider,
+    })
+  } else {
+    mpc = new MPC({
+      contractId: 'v1.signer',
+      provider: clients[chains.NEAR] as Provider,
+    })
+  }
 
   switch (chain) {
     case chains.NEAR:
