@@ -47,36 +47,29 @@ async function main() {
 main()
 ```
 
-<details>
-
-<summary> Testnet </summary>
-
-If you want to use a `testnet` NEAR account be sure to add the `mpcNetwork: testnet` parameter to `getAdapter`
-
-```js
-  const adapter = getAdapter({ chain: chains.ARBITRUM, mpcNetwork: 'testnet' })
-```
+> [!IMPORTANT]
+> If you want to use a `testnet` NEAR account be sure to add the `mpcNetwork: testnet` parameter to `getAdapter`
+>
+>```js
+>  const adapter = getAdapter({ chain: chains.ARBITRUM, mpcNetwork: 'testnet' })
+>```
 
 </details>
 
-
-<details>
-
-<summary> Multiple Accounts </summary>
-
-You can control multiple accounts on each chain, for that you only need to change the `addressIndex` (defaults to `0`)
+> [!NOTE]
+> You can control multiple accounts on each chain, for that you only need to change the `addressIndex` (defaults to `0`)
 on both `getControlledAccount` and `transfer`
-
-```js
-  const { address } = await adapter.getControlledAccount({ nearAccountId, addressIndex: 1 })
-
-  const txHash = await adapter.transfer({
-    to: '0x2f318C334780961FB129D2a6c30D0763d9a5C970',
-    amount: '10000000000000000', // 0.01 ETH
-    nearAccount: account,
-    addressIndex: 1
-  })
-```
+>
+>```js
+>  const { address } = await adapter.getControlledAccount({ nearAccountId, addressIndex: 1 })
+>
+>  const txHash = await adapter.transfer({
+>    to: '0x2f318C334780961FB129D2a6c30D0763d9a5C970',
+>    amount: '10000000000000000', // 0.01 ETH
+>    nearAccount: account,
+>    addressIndex: 1
+>  })
+>```
 
 </details>
 
