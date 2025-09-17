@@ -7,9 +7,9 @@ on:
     workflow_dispatch:
 
 env:
-  NODE_VERSION: 20.18.3
+  NODE_VERSION: 22.12.0
   ENTRY_FILE: 'packages'
-  CONFIG_PATH: 'tsconfig.base.json'
+  CONFIG_PATH: 'tsconfig.json'
   DESTINATION_FOLDER: "docs"
   
 jobs:
