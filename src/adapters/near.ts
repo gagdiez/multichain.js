@@ -11,13 +11,8 @@ export class NEARAdapter implements ChainAdapter<string> {
     this.publicClient = publicClient
   }
 
-  // Accept an object to match the ChainAdapter signature
-  async getControlledAccount({ nearAccountId }: { nearAccountId: string }) {
-    // path is unused for NEAR for now
-    return {
-      address: nearAccountId,
-      publicKey: null,
-    }
+  async getAddressControlledBy({ nearAddress }: { nearAddress: string }) {
+    return nearAddress
   }
 
   async getBalance({
@@ -41,7 +36,7 @@ export class NEARAdapter implements ChainAdapter<string> {
     const acc = new Account(address, this.publicClient)
     balance = await acc.getBalance(token)
 
-    return { balance: balance.toString() }
+    return balance.toString()
   }
 
   async transfer({

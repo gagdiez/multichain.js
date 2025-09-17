@@ -2,19 +2,20 @@ import { Account } from '@near-js/accounts'
 import { KeyPair } from '@near-js/crypto'
 import { JsonRpcProvider } from '@near-js/providers'
 import { KeyPairSigner } from '@near-js/signers'
-import { getAdapter, chains } from 'multichain.js'
+
+import { getAdapter, chains } from '../src'
 
 async function main() {
   // NEAR Account
   const provider = new JsonRpcProvider({ url: 'https://test.rpc.fastnear.com' })
 
-  const nearAccountId = 'your-account.testnet'
+  const nearAddress = 'your-account.testnet'
   const signer = new KeyPairSigner(KeyPair.fromString('ed25519:...'))
-  const account = new Account(nearAccountId, provider, signer)
+  const account = new Account(nearAddress, provider, signer)
 
   // Ethereum Adapter
   const adapter = getAdapter({ chain: chains.ARBITRUM, mpcNetwork: 'testnet' })
-  const { address } = await adapter.getControlledAccount({ nearAccountId })
+  const address = await adapter.getAddressControlledBy({ nearAddress })
   console.log('Address:', address)
 
   const balance = await adapter.getBalance({ address })

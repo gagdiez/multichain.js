@@ -4,38 +4,36 @@ export * from './evm'
 export * from './near'
 
 export type HexString = `0x${string}`
+type TxHash = string
 
 // Base interface - chain agnostic with generics
 export interface ChainAdapter<AddressType = string> {
   publicClient: any
-  getControlledAccount: ({
-    nearAccountId,
-    addressIndex,
+  getAddressControlledBy: ({
+    nearAddress,
+    derivationIndex,
   }: {
-    nearAccountId: string
-    addressIndex?: number
-  }) => Promise<{
-    address: AddressType
-    publicKey: string | null
-  }>
+    nearAddress: string
+    derivationIndex?: number
+  }) => Promise<AddressType>
   getBalance: ({
     address,
     tokenAddress,
   }: {
     address: AddressType
     tokenAddress?: AddressType
-  }) => Promise<{ balance: string }>
+  }) => Promise<string>
   transfer: ({
     to,
     amount,
-    nearAccount,
     tokenAddress,
-    addressIndex,
+    nearAccount,
+    derivationIndex,
   }: {
     to: AddressType
     amount: string
-    nearAccount: Account
     tokenAddress?: AddressType
-    addressIndex?: number
-  }) => Promise<string>
+    nearAccount: Account
+    derivationIndex?: number
+  }) => Promise<TxHash>
 }

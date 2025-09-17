@@ -46,19 +46,18 @@ export class EVMAdapter implements ChainAdapter<EVMAddress> {
     this.mpc = mpc
   }
 
-  async getControlledAccount({
-    nearAccountId,
-    addressIndex = 0,
+  async getAddressControlledBy({
+    nearAddress,
+    derivationIndex = 0,
   }: {
-    nearAccountId: string
-    addressIndex?: number
+    nearAddress: string
+    derivationIndex?: number
   }) {
-    const { address, publicKey } =
-      await this.chainAdapter.deriveAddressAndPublicKey(
-        nearAccountId,
-        addressIndex.toString()
-      )
-    return { address: address as EVMAddress, publicKey }
+    const { address } = await this.chainAdapter.deriveAddressAndPublicKey(
+      nearAddress,
+      derivationIndex.toString()
+    )
+    return address as EVMAddress
   }
 
   async getBalance({
@@ -82,8 +81,7 @@ export class EVMAdapter implements ChainAdapter<EVMAddress> {
       })) as bigint
     }
 
-    // Ensure shape matches existing expectations: { balance: <string> }
-    return { balance: balance.toString() }
+    return balance.toString()
   }
 
   async transfer({
@@ -91,23 +89,23 @@ export class EVMAdapter implements ChainAdapter<EVMAddress> {
     amount,
     nearAccount,
     tokenAddress,
-    addressIndex = 0,
+    derivationIndex = 0,
   }: {
     to: EVMAddress
     amount: string
     nearAccount: Account
     tokenAddress?: EVMAddress
-    addressIndex?: number
+    derivationIndex?: number
   }) {
     let txParams: any
 
-    const controlledAccount = await this.getControlledAccount({
-      nearAccountId: nearAccount.accountId,
-      addressIndex,
+    const controlledAddress = await this.getAddressControlledBy({
+      nearAddress: nearAccount.accountId,
+      derivationIndex,
     })
 
     to = getAddress(to)
-    let from = getAddress(controlledAccount.address)
+    let from = getAddress(controlledAddress)
     if (tokenAddress) tokenAddress = getAddress(tokenAddress)
 
     if (tokenAddress) {
@@ -138,7 +136,7 @@ export class EVMAdapter implements ChainAdapter<EVMAddress> {
 
     const rsvSignatures = await this.mpc.sign({
       payloads: hashesToSign,
-      path: addressIndex.toString(),
+      path: derivationIndex.toString(),
       keyType: 'Ecdsa',
       signerAccount: nearAccount,
     })
